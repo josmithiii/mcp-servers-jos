@@ -7,5 +7,5 @@ an [MCP Template](https://github.com/josmithiii/mcp-template)
 
 ## Contents
 
-* juce-docs-mcp-server - access JUCE Framework C++ class documentation
+* [juce-docs-mcp-server](./juce-docs-mcp-server/README.md) - access JUCE Framework C++ class documentation
 
