@@ -1,0 +1,31 @@
+{
+  "name": "juce-docs-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for JUCE Framework documentation",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc -w",
+    "test": "tsc && node dist/test-client.js"
+  },
+  "keywords": [
+    "mcp",
+    "juce",
+    "documentation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^2.6.9",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/node-fetch": "^2.6.9",
+    "typescript": "^5.3.3"
+  }
+}
