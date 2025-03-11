@@ -70,11 +70,13 @@ the MCP internally, you can also query it directly via "resource" and
    are defined in the server as direct resource endpoints.  Example:
    `juce://classes`
 
-2. **Tools** use names beginning with `/`, and provide interactive
+2. **Tools** use names beginning with `/` and support a following
+   argument, i.e., `/tool-name arg-string`, and provide interactive
    commands that perform an action. MCP tools start with `/` to
    distinguish them from resources. This is similar to how slash
    commands work in many applications such as `Claude Code` or
-   `aider`.
+   `aider`.  Note that in an IDE chat, the `arg-string` can include
+   spaces and is terminated by end-of-line (according to Claude 3.7).
 
 In summary, when connected to an MCP client (such as via Cursor chat),
 you can access "resources" in the format `protocol://path` and "tools"
@@ -173,6 +175,8 @@ Common issues and solutions:
 # Run in development mode with auto-recompilation
 npm run dev
 ```
+
+[Developer Notes](./README-DEV.md)
 
 ## License
 
