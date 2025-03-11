@@ -32,7 +32,16 @@ npm run build
 npm start
 ```
 
-This starts the MCP server using stdio as the transport mechanism, which allows it to be used with MCP clients like Claude Desktop App, Continue, or other MCP-compatible applications.
+This starts the MCP server using `stdio` as the transport mechanism, which allows it to be used with MCP clients like Claude Desktop App, Continue, or other MCP-compatible applications.
+
+### Adding the MCP service to Cursor (as of 2025-03-11)
+
+1. Open Cursor / Settings / Cursor Settings
+2. Select MCP
+3. Set `Name` to JUCE Docs (or whatever), and `Type` to `Command`
+3. Set `Command` to `node /path/to/juce-docs-mcp-server/dist/index.js`
+   Replace `/path/to/juce-docs-mcp-server` with the actual path to your cloned repository
+5. Restart Cursor to apply the changes
 
 ### Available Resources
 
