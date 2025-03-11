@@ -14,8 +14,8 @@ An MCP (Model Context Protocol) server that provides access to JUCE Framework C+
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/juce-docs-mcp-server.git
-cd juce-docs-mcp-server
+git clone https://github.com/josmithiii/mcp-servers-jos.git
+cd mcp-servers-jos/juce-docs-mcp-server
 
 # Install dependencies
 npm install
@@ -41,7 +41,7 @@ This starts the MCP server using `stdio` as the transport mechanism, which allow
 3. Set `Name` to JUCE Docs (or whatever), and `Type` to `Command`
 3. Set `Command` to `node /path/to/juce-docs-mcp-server/dist/index.js`
    Replace `/path/to/juce-docs-mcp-server` with the actual path to your cloned repository
-5. Restart Cursor to apply the changes
+5. Restart Cursor to apply the changes (it will internally run `node .../dist/index.js`)
 
 ### Available Resources
 
@@ -57,13 +57,34 @@ This starts the MCP server using `stdio` as the transport mechanism, which allow
 
 - `explore-juce` - Get help exploring JUCE framework components
 
-## Example
+### Resources and Tools
 
-When connected to an MCP client, you can:
+In addition to prompts that direct your LLM (such as in Cursor) to use
+the MCP internally, you can also query it directly via "resource" and
+"tool" names:
+
+1. **Resources** look like URLs that directly fetch specific content. They
+   follow a URI-like pattern with the format `protocol://path`. These
+   are defined in the server as direct resource endpoints.  Example:
+   `juce://classes`
+
+2. **Tools** use names beginning with `/`, and provide interactive
+   commands that perform an action. MCP tools conventionally start
+   with / to distinguish them from resources. This is similar to how
+   slash commands work in many applications such as `Claude Code` or
+   `aider`.
+
+## Examples
+
+When connected to an MCP client (such as via Cursor chat), you can
+access "resources" in the format `protocol://path` and "tools" in the
+format `/tool-name`:
 
 1. List all available classes: `juce://classes`
 2. Get documentation for a specific class: `juce://class/ValueTree`
-3. Search for classes: Use the `search-classes` tool with a query parameter
+3. Search for all Audio classes: `/search-classes Audio`
+4. Get documentation for specific classes: `juce://class/AudioProcessor`
+
 
 ## Development
 

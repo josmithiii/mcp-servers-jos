@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 
 const BASE_URL = 'https://ccrma.stanford.edu/~jos/juce_modules';
-const INDEX_URL = `${BASE_URL}/index.html`;
+const INDEX_URL = `${BASE_URL}/annotated.html`;
 const CLASS_URL_PATTERN = `${BASE_URL}/class{className}.html`;
 
 /**
@@ -29,13 +29,13 @@ export async function fetchClassList(): Promise<string[]> {
     const html = await fetchHtml(INDEX_URL);
     const $ = cheerio.load(html);
     
-    // Extract class names from the index page
-    // This is a simplified approach - you might need to adjust the selector based on the actual HTML structure
+    // Extract class names from the class list page
     const classes: string[] = [];
     
-    // Look for links that point to class documentation
-    $('a[href^="class"]').each((_, element) => {
-      const href = $(element).attr('href');
+    // Look for links in the class list
+    $('.directory tr.even, .directory tr.odd').each((_, element) => {
+      const link = $(element).find('td.entry a');
+      const href = link.attr('href');
       if (href && href.startsWith('class') && href.endsWith('.html')) {
         // Extract class name from href (e.g., "classValueTree.html" -> "ValueTree")
         const className = href.replace(/^class/, '').replace(/\.html$/, '');
