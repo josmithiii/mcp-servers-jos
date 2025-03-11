@@ -2,6 +2,8 @@ import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 
 const BASE_URL = 'https://ccrma.stanford.edu/~jos/juce_modules';
+// const BASE_URL = 'https://docs.juce.com/develop';
+// const BASE_URL = 'https://docs.juce.com/master';
 const INDEX_URL = `${BASE_URL}/annotated.html`;
 const CLASS_URL_PATTERN = `${BASE_URL}/class{className}.html`;
 

@@ -87,6 +87,18 @@ in the format `/tool-name`.
 3. Search for all Audio classes: `/search-juce-classes Audio`
 4. Get documentation for specific classes: `/get-juce-class-docs AudioProcessor`
 
+## Changing the JUCE Doc URL
+
+In `juce-docs-mcp-server/src/juce-docs.ts`, edit the line
+ ```
+ const BASE_URL = 'https://ccrma.stanford.edu/~jos/juce_modules';
+ ```
+More up-to-date possibilities include 
+ ```
+ const BASE_URL = 'https://docs.juce.com/develop';
+ const BASE_URL = 'https://docs.juce.com/master';
+ ```
+
 ## Tips for Effective JUCE Development
 
 When working on a JUCE project, here's how to get the most out of the JUCE Documentation MCP Server:
@@ -138,7 +150,8 @@ When working on a JUCE project, here's how to get the most out of the JUCE Docum
 ## Implementation Details
 
 The server fetches documentation from the JUCE documentation hosted at Stanford CCRMA
-(https://ccrma.stanford.edu/~jos/juce_modules/). It processes the HTML documentation in real-time:
+(https://ccrma.stanford.edu/~jos/juce_modules/), but of course you can change that, as noted above.
+It processes the HTML documentation in real-time:
 
 1. Class list is fetched from the annotated class list page
 2. Individual class documentation is parsed from class-specific pages
