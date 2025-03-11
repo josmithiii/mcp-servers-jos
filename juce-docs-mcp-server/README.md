@@ -87,6 +87,54 @@ in the format `/tool-name`.
 3. Search for all Audio classes: `/search-juce-classes Audio`
 4. Get documentation for specific classes: `/get-juce-class-docs AudioProcessor`
 
+## Tips for Effective JUCE Development
+
+When working on a JUCE project, here's how to get the most out of the JUCE Documentation MCP Server:
+
+### Quick Reference Workflows
+
+1. **Exploring Components**
+   - Start with `/search-juce-classes` followed by a general category (Audio, GUI, etc.)
+   - Use `explore-juce audio` (or other domain) to get an overview of related classes
+
+2. **Implementation Help**
+   - When implementing a specific feature, use `juce://class/ClassName` to get detailed documentation
+   - Look for code examples in the class documentation
+
+3. **Method Reference**
+   - The class documentation includes all methods with signatures and descriptions
+   - Use this when you need to understand parameter types or return values
+
+### Integration with Your Development Process
+
+1. **Keep Cursor Open Alongside Your IDE**
+   - Have Cursor with the MCP server running in a separate window
+   - This gives you instant access to documentation without leaving your code editor
+
+2. **Use During Planning Phases**
+   - Before implementing a feature, explore available classes with `/search-juce-classes`
+   - This helps you understand the JUCE approach before writing code
+
+3. **Debugging Assistance**
+   - When encountering unexpected behavior, check the class documentation
+   - Look for notes about edge cases or implementation details
+
+### Specific JUCE Development Tips
+
+1. **Audio Processing**
+   - Start with `AudioProcessor` for plugin development
+   - Use `AudioSource` for playback applications
+   - Check `dsp::` namespace classes for efficient signal processing
+
+2. **GUI Development**
+   - Base all custom components on the `Component` class
+   - Use `AudioAppComponent` to combine audio and GUI functionality
+   - Look at `LookAndFeel` for styling
+
+3. **Plugin Development**
+   - Reference `AudioProcessor` and `AudioProcessorEditor` for the core plugin architecture
+   - Check `AudioProcessorValueTreeState` for parameter management
+
 ## Implementation Details
 
 The server fetches documentation from the JUCE documentation hosted at Stanford CCRMA
