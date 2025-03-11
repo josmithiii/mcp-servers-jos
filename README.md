@@ -1,6 +1,6 @@
-# mcp-template
+# mcp-servers-jos
 
-MCP servers by JOS, starting from an [MCP Template](https://github.com/josmithiii/mcp-template)
+MCP servers by [JOS](https://github.com/josmithiii), starting from an [MCP Template](https://github.com/josmithiii/mcp-template)
 
 ## Contents
 
