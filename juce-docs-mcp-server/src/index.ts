@@ -65,7 +65,7 @@ server.resource(
 
 // Tool for searching classes
 server.tool(
-  "search-classes",
+  "search-juce-classes",
   { query: z.string() },
   async ({ query }) => {
     console.log(`Searching for classes matching: ${query}`);
@@ -91,7 +91,7 @@ server.tool(
 
 // Tool for getting class documentation
 server.tool(
-  "get-class-docs",
+  "get-juce-class-docs",
   { className: z.string() },
   async ({ className }) => {
     console.log(`Fetching documentation for class: ${className}`);
