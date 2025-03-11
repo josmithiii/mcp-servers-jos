@@ -34,13 +34,13 @@ npm start
 
 This starts the MCP server using `stdio` as the transport mechanism, which allows it to be used with MCP clients like Claude Desktop App, Continue, or other MCP-compatible applications.
 
-### Adding the MCP service to Cursor (as of 2025-03-11)
+### Adding the MCP service to Cursor (tested 2025-03-11)
 
 1. Open Cursor / Settings / Cursor Settings
 2. Select MCP
-3. Set `Name` to JUCE Docs (or whatever), and `Type` to `Command`
-3. Set `Command` to `node /path/to/juce-docs-mcp-server/dist/index.js`
-   Replace `/path/to/juce-docs-mcp-server` with the actual path to your cloned repository
+3. Set the `Name` to JUCE Docs (or whatever), and set the `Type` to `Command`
+3. Set the `Command` to `node /path/to/juce-docs-mcp-server/dist/index.js`,
+   replacing `/path/to/juce-docs-mcp-server` with the actual path into your clone
 5. Restart Cursor to apply the changes (it will internally run `node .../dist/index.js`)
 
 ### Available Resources
@@ -50,12 +50,14 @@ This starts the MCP server using `stdio` as the transport mechanism, which allow
 
 ### Available Tools
 
-- `search-classes` - Search for JUCE classes by name
-- `get-class-docs` - Get documentation for a specific JUCE class
+- `/search-juce-classes` - Search for JUCE classes by name
+- `/get-juce-class-docs` - Get documentation for a specific JUCE class
 
 ### Available Prompts
 
-- `explore-juce` - Get help exploring JUCE framework components
+- `explore-juce` - Interactive exploration of JUCE framework components
+  - Use without arguments for an overview of main components
+  - Add a topic to explore specific functionality (e.g., `explore-juce audio`)
 
 ### Resources and Tools
 
@@ -69,22 +71,40 @@ the MCP internally, you can also query it directly via "resource" and
    `juce://classes`
 
 2. **Tools** use names beginning with `/`, and provide interactive
-   commands that perform an action. MCP tools conventionally start
-   with / to distinguish them from resources. This is similar to how
-   slash commands work in many applications such as `Claude Code` or
+   commands that perform an action. MCP tools start with `/` to
+   distinguish them from resources. This is similar to how slash
+   commands work in many applications such as `Claude Code` or
    `aider`.
+
+In summary, when connected to an MCP client (such as via Cursor chat),
+you can access "resources" in the format `protocol://path` and "tools"
+in the format `/tool-name`.
 
 ## Examples
 
-When connected to an MCP client (such as via Cursor chat), you can
-access "resources" in the format `protocol://path` and "tools" in the
-format `/tool-name`:
-
 1. List all available classes: `juce://classes`
 2. Get documentation for a specific class: `juce://class/ValueTree`
-3. Search for all Audio classes: `/search-classes Audio`
-4. Get documentation for specific classes: `juce://class/AudioProcessor`
+3. Search for all Audio classes: `/search-juce-classes Audio`
+4. Get documentation for specific classes: `/get-juce-class-docs AudioProcessor`
 
+## Implementation Details
+
+The server fetches documentation from the JUCE documentation hosted at Stanford CCRMA
+(https://ccrma.stanford.edu/~jos/juce_modules/). It processes the HTML documentation in real-time:
+
+1. Class list is fetched from the annotated class list page
+2. Individual class documentation is parsed from class-specific pages
+3. Documentation is formatted as markdown for consistent display
+4. Results are cached in memory during server runtime
+
+## Error Handling
+
+Common issues and solutions:
+
+1. **Class Not Found**: If a class name is invalid or not found, the server will return a clear error message
+2. **Connection Issues**: If the JUCE documentation site is unreachable, check your internet connection
+3. **Server Start Failure**: Ensure the correct Node.js version is installed and the build step completed successfully
+4. **Cursor Integration**: If the server isn't working in Cursor, verify the command path in MCP settings is correct
 
 ## Development
 
@@ -92,46 +112,6 @@ format `/tool-name`:
 # Run in development mode with auto-recompilation
 npm run dev
 ```
-
-## How It Works
-
-The server fetches documentation from the JUCE documentation hosted at Stanford CCRMA:
-https://ccrma.stanford.edu/~jos/juce_modules/index.html
-
-It parses the HTML documentation and exposes it through the MCP protocol, making it easily accessible to LLM applications.
-
-## Initial Claude Prompt in Cursor on 
-
-I want to create an MCP server which provides an API for retrieving C++ class documentation for the JUCE Framework, using this URL for the lookups:
-https://ccrma.stanford.edu/~jos/juce_modules/index.html
-For example, documentation for the ValueTree class can be accessed as
-https://ccrma.stanford.edu/~jos/juce_modules/classValueTree.html
-
-## Claude's Wrap-Up Summary
-
-Our MCP server for JUCE documentation is working correctly. Here's a summary of what we've built:
-
-1. We've created an MCP server that provides access to JUCE Framework C++ class documentation.
-2. The server exposes resources for retrieving documentation for specific classes and listing all available classes.
-3. It provides tools for searching classes and getting class documentation.
-4. We've included a prompt for exploring JUCE documentation.
-5. We've created a test client to verify that the server works correctly.
-
-The key components of the project are:
-
-1. **juce-docs.ts**: Contains utility functions for fetching and parsing JUCE documentation from the Stanford CCRMA website.
-2. **index.ts**: The main MCP server implementation that exposes resources, tools, and prompts.
-3. **test-client.ts**: A test client that verifies the server functionality.
-
-To use this MCP server with an MCP client like Claude Desktop App, Continue, or other MCP-compatible applications, you would:
-
-1. Build the project: `npm run build`
-2. Start the server: `npm start`
-3. Connect to it from your MCP client
-
-This MCP server makes it easy to access JUCE documentation directly
-from your LLM applications, enhancing your development workflow when
-working with the JUCE Framework.
 
 ## License
 
