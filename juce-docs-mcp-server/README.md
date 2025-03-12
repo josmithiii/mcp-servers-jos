@@ -80,7 +80,7 @@ the MCP internally, you can also query it directly via "resource" and
 
 In summary, when connected to an MCP client (such as via Cursor chat),
 you can access "resources" in the format `protocol://path` and "tools"
-in the format `/tool-name`.
+in the format `/tool-name arg string`.
 
 ## Examples
 
