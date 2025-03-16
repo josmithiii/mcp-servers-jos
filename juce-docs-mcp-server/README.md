@@ -43,6 +43,8 @@ This starts the MCP server using `stdio` as the transport mechanism, which allow
    replacing `/path/to/juce-docs-mcp-server` with the actual path into your clone
 5. Restart Cursor to apply the changes (it will internally run `node .../dist/index.js`)
 
+Note that Cursor sends MCP requests to _your local server_ that you started with `npm start` above.
+
 ### Available Resources
 
 - `juce://class/{className}` - Get documentation for a specific JUCE class
