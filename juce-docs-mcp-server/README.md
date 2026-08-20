@@ -9,6 +9,9 @@ An MCP (Model Context Protocol) server that provides access to JUCE Framework C+
 - Search for classes by name
 - Format documentation as markdown
 - Expose documentation through MCP resources and tools
+- Default docs source: `https://docs.juce.com/master`
+- Switch docs source at runtime (master/develop/custom URL/local path)
+- Optional local docs setup from a JUCE checkout path
 
 ## Installation
 
@@ -26,13 +29,197 @@ npm run build
 
 ## Usage
 
-### Running the Server
+### Quick Start (Simple Setup)
+
+If you want the easiest setup, follow these steps exactly.
+
+1. Build once:
+
+```bash
+cd /path/to/mcp-servers-jos/juce-docs-mcp-server
+npm install
+npm run build
+```
+
+2. Add this MCP server to your client:
+
+```bash
+# Codex
+codex mcp add juce-docs -- node "$(pwd)/dist/index.js"
+
+# Claude Code
+claude mcp add --scope user juce-docs -- node "$(pwd)/dist/index.js"
+```
+
+3. Check current docs source (default is JUCE `master`):
+
+- Run tool `get-juce-docs-config` with args:
+
+```json
+{}
+```
+
+4. If you want JUCE develop docs instead of master:
+
+- Run tool `set-juce-docs-source` with args:
+
+```json
+{
+  "source": "develop"
+}
+```
+
+5. If you want local docs from your JUCE checkout (faster, no docs network fetches):
+
+- Run tool `setup-local-juce-docs` with args:
+
+```json
+{
+  "jucePath": "~/Code/JUCE",
+  "generateIfMissing": true
+}
+```
+
+`generateIfMissing` is only needed if local docs are not generated yet.
+
+6. Switch back to hosted stable docs anytime:
+
+- Run tool `set-juce-docs-source` with args:
+
+```json
+{
+  "source": "master"
+}
+```
+
+Notes:
+
+- You only need `npm run build` again after pulling/changing this server code.
+- Your docs source choice is saved and reused on next startup.
+- Local docs follow whatever branch/tag your local JUCE checkout is on. If you checkout a beta/develop branch in `~/Code/JUCE`, then regenerate docs, this MCP server will use those docs.
+
+### Single-Command Terminal Setup (Set Source While Adding MCP)
+
+If you want to configure docs source in one terminal command (without calling MCP tools in chat),
+set environment variables when adding the server.
+
+Goal: add the MCP server and choose docs source up front.
+
+- Use `master` for stable hosted JUCE docs.
+- Use `local-path` for local JUCE docs (faster, no docs network fetches, follows your local JUCE branch after docs regeneration).
+
+Claude CLI note: put `juce-docs` before `-e` flags.
+
+- Correct pattern: `claude mcp add --scope user juce-docs -e KEY=value -- node "$(pwd)/dist/index.js"`
+
+`set-juce-docs-source` options are:
+
+- `source=master`
+- `source=develop`
+- `source=custom-url` with `url`
+- `source=local-path` with `localDocsPath`
+
+Equivalent one-line terminal commands:
+
+```bash
+# Codex: stable JUCE docs (master)
+codex mcp add juce-docs --env JUCE_DOCS_SOURCE=master -- node "$(pwd)/dist/index.js"
+
+# Codex: develop docs
+codex mcp add juce-docs --env JUCE_DOCS_SOURCE=develop -- node "$(pwd)/dist/index.js"
+
+# Codex: custom docs URL
+codex mcp add juce-docs \
+  --env JUCE_DOCS_SOURCE=custom-url \
+  --env JUCE_DOCS_BASE_URL=https://docs.juce.com/develop \
+  -- node "$(pwd)/dist/index.js"
+
+# Codex: local docs path (no docs network fetches)
+codex mcp add juce-docs \
+  --env JUCE_DOCS_SOURCE=local-path \
+  --env JUCE_DOCS_LOCAL_PATH="$HOME/Code/JUCE/docs/doxygen/doc" \
+  -- node "$(pwd)/dist/index.js"
+```
+
+```bash
+# Claude Code: stable JUCE docs (master)
+claude mcp add --scope user juce-docs -e JUCE_DOCS_SOURCE=master -- node "$(pwd)/dist/index.js"
+
+# Claude Code: develop docs
+claude mcp add --scope user juce-docs -e JUCE_DOCS_SOURCE=develop -- node "$(pwd)/dist/index.js"
+
+# Claude Code: custom docs URL
+claude mcp add --scope user juce-docs \
+  -e JUCE_DOCS_SOURCE=custom-url \
+  -e JUCE_DOCS_BASE_URL=https://docs.juce.com/develop \
+  -- node "$(pwd)/dist/index.js"
+
+# Claude Code: local docs path
+claude mcp add --scope user juce-docs \
+  -e JUCE_DOCS_SOURCE=local-path \
+  -e JUCE_DOCS_LOCAL_PATH="$HOME/Code/JUCE/docs/doxygen/doc" \
+  -- node "$(pwd)/dist/index.js"
+```
+
+Most common copy/paste options:
+
+For local JUCE docs (from your local JUCE checkout, e.g. master branch):
+
+```bash
+# Codex
+codex mcp add juce-docs \
+  --env JUCE_DOCS_SOURCE=local-path \
+  --env JUCE_DOCS_LOCAL_PATH="$HOME/Code/JUCE/docs/doxygen/doc" \
+  -- node "$(pwd)/dist/index.js"
+
+# Claude
+claude mcp add --scope user juce-docs \
+  -e JUCE_DOCS_SOURCE=local-path \
+  -e JUCE_DOCS_LOCAL_PATH="$HOME/Code/JUCE/docs/doxygen/doc" \
+  -- node "$(pwd)/dist/index.js"
+```
+
+If you want hosted master docs instead:
+
+```bash
+# Codex
+codex mcp add juce-docs --env JUCE_DOCS_SOURCE=master -- node "$(pwd)/dist/index.js"
+
+# Claude
+claude mcp add --scope user juce-docs -e JUCE_DOCS_SOURCE=master -- node "$(pwd)/dist/index.js"
+```
+
+If `juce-docs` is already added, remove then re-add:
+
+```bash
+codex mcp remove juce-docs
+claude mcp remove --scope user juce-docs
+```
+
+### Add to MCP Clients (Auto-Start, Recommended)
+
+When configured as a `stdio` MCP server, Codex/Claude/Cursor start this server
+automatically when needed. You do not need to run `npm start` manually.
+
+```bash
+# from juce-docs-mcp-server directory
+codex mcp add juce-docs -- node "$(pwd)/dist/index.js"
+claude mcp add --scope user juce-docs -- node "$(pwd)/dist/index.js"
+```
+
+Build/install cadence:
+
+- Run `npm install` once per clone (or when dependencies change)
+- Run `npm run build` after pulling/changing TypeScript source
+
+### Running the Server Manually (Optional)
 
 ```bash
 npm start
 ```
 
-This starts the MCP server using `stdio` as the transport mechanism, which allows it to be used with MCP clients like Claude Desktop App, Continue, or other MCP-compatible applications.
+This starts the MCP server using `stdio`. Manual start is mainly useful for local
+debugging or direct testing.
 
 ### Adding the MCP service to Cursor (tested 2025-03-11)
 
@@ -43,7 +230,8 @@ This starts the MCP server using `stdio` as the transport mechanism, which allow
    replacing `/path/to/juce-docs-mcp-server` with the actual path into your clone
 5. Restart Cursor to apply the changes (it will internally run `node .../dist/index.js`)
 
-Note that Cursor sends MCP requests to _your local server_ that you started with `npm start` above.
+Cursor will start the configured command automatically; no separate `npm start`
+process is required.
 
 ### Adding the MCP service to Visual Studio (Tested 2026-01-13)
 
@@ -82,8 +270,11 @@ Unlike some other MCP clients, **Visual Studio requires a non-empty `description
 
 ### Available Tools
 
-- `/search-juce-classes` - Search for JUCE classes by name
-- `/get-juce-class-docs` - Get documentation for a specific JUCE class
+- `search-juce-classes` - Search for JUCE classes by name
+- `get-juce-class-docs` - Get documentation for a specific JUCE class
+- `get-juce-docs-config` - Show current docs source and how to switch it
+- `set-juce-docs-source` - Switch docs source (master/develop/custom/local)
+- `setup-local-juce-docs` - Point to a local JUCE checkout and optionally generate docs
 
 ### Available Prompts
 
@@ -102,36 +293,54 @@ the MCP internally, you can also query it directly via "resource" and
    are defined in the server as direct resource endpoints.  Example:
    `juce://classes`
 
-2. **Tools** use names beginning with `/` and support a following
-   argument, i.e., `/tool-name arg-string`, and provide interactive
-   commands that perform an action. MCP tools start with `/` to
-   distinguish them from resources. This is similar to how slash
-   commands work in many applications such as `Claude Code` or
-   `aider`.  Note that in an IDE chat, the `arg-string` can include
-   spaces and is terminated by end-of-line (according to Claude 3.7).
+2. **Tools** are MCP function calls by name (for example:
+   `search-juce-classes`, `set-juce-docs-source`) plus arguments.
+   Depending on the MCP client UI, these may also appear as slash-style
+   commands.
 
 In summary, when connected to an MCP client (such as via Cursor chat),
 you can access "resources" in the format `protocol://path` and "tools"
-in the format `/tool-name arg string`.
+by tool name plus arguments (with some clients also supporting slash-style syntax).
 
 ## Examples
 
 1. List all available classes: `juce://classes`
 2. Get documentation for a specific class: `juce://class/ValueTree`
-3. Search for all Audio classes: `/search-juce-classes Audio`
-4. Get documentation for specific classes: `/get-juce-class-docs AudioProcessor`
+3. Search for all Audio classes: `search-juce-classes` with `{ "query": "Audio" }`
+4. Get docs for a class: `get-juce-class-docs` with `{ "className": "AudioProcessor" }`
 
-## Changing the JUCE Doc URL
+## Docs Source Configuration
 
-In `juce-docs-mcp-server/src/juce-docs.ts`, edit the line
- ```
- const BASE_URL = 'https://ccrma.stanford.edu/~jos/juce_modules';
- ```
-More up-to-date possibilities include 
- ```
- const BASE_URL = 'https://docs.juce.com/develop';
- const BASE_URL = 'https://docs.juce.com/master';
- ```
+This server defaults to official JUCE **master** docs:
+
+```text
+https://docs.juce.com/master
+```
+
+You can switch sources without editing code by calling MCP tools:
+
+1. `get-juce-docs-config` to inspect current config
+2. `set-juce-docs-source` with one of:
+   - `source=master`
+   - `source=develop`
+   - `source=custom-url` + `url=https://...`
+   - `source=local-path` + `localDocsPath=/path/to/docs`
+3. `setup-local-juce-docs` with:
+   - `jucePath=/path/to/JUCE`
+   - `generateIfMissing=true` (optional)
+
+Configuration is persisted in:
+
+```text
+~/.juce-docs-mcp-server/config.json
+```
+
+You can override config via environment variables:
+
+- `JUCE_DOCS_SOURCE=master|develop|custom-url|local-path`
+- `JUCE_DOCS_BASE_URL=https://...` (for `custom-url`)
+- `JUCE_DOCS_LOCAL_PATH=/path/to/docs` (for `local-path`)
+- `JUCE_DOCS_CONFIG_PATH=/custom/path/config.json` (optional config location)
 
 ## Tips for Effective JUCE Development
 
@@ -183,14 +392,17 @@ When working on a JUCE project, here's how to get the most out of the JUCE Docum
 
 ## Implementation Details
 
-The server fetches documentation from the JUCE documentation hosted at Stanford CCRMA
-(https://ccrma.stanford.edu/~jos/juce_modules/), but of course you can change that, as noted above.
-It processes the HTML documentation in real-time:
+The server processes JUCE Doxygen HTML in real-time from either:
+
+- Official hosted docs (`master`, `develop`, or custom URL)
+- A local docs directory (no network required)
+
+It extracts:
 
 1. Class list is fetched from the annotated class list page
 2. Individual class documentation is parsed from class-specific pages
 3. Documentation is formatted as markdown for consistent display
-4. Results are cached in memory during server runtime
+4. Class list results are cached in memory during server runtime
 
 ## Error Handling
 

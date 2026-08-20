@@ -1,15 +1,9 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { spawn } from "child_process";
 
 async function main() {
   try {
     console.log("Starting test client for JUCE Documentation MCP Server...");
-    
-    // Start the server process
-    const serverProcess = spawn("node", ["dist/index.js"], {
-      stdio: ["pipe", "pipe", process.stderr]
-    });
     
     // Create a transport that communicates with the server process
     const transport = new StdioClientTransport({
@@ -64,7 +58,7 @@ async function main() {
     // Test searching for classes
     console.log("\nSearching for 'Audio' classes...");
     const searchResult = await client.callTool({
-      name: "search-classes",
+      name: "search-juce-classes",
       arguments: {
         query: "Audio"
       }
@@ -79,7 +73,7 @@ async function main() {
     // Test getting class documentation
     console.log("\nGetting AudioBuffer class documentation...");
     const audioDocs = await client.callTool({
-      name: "get-class-docs",
+      name: "get-juce-class-docs",
       arguments: {
         className: "AudioBuffer"
       }
@@ -94,7 +88,7 @@ async function main() {
     console.log("\nAll tests completed successfully!");
     
     // Clean up
-    serverProcess.kill();
+    await client.close();
     process.exit(0);
   } catch (error) {
     console.error("Error in test client:", error);
