@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
@@ -18,10 +19,7 @@ async function main() {
         version: "1.0.0"
       },
       {
-        capabilities: {
-          resources: {},
-          tools: {}
-        }
+        capabilities: {}
       }
     );
     
@@ -42,7 +40,9 @@ async function main() {
     // Test reading the class list resource
     console.log("\nReading class list...");
     const classList = await client.readResource({ uri: "juce://classes" });
-    if (classList.contents && classList.contents[0] && classList.contents[0].text) {
+    assert(classList.contents[0] && "text" in classList.contents[0]);
+    assert.match(classList.contents[0].text, /ValueTree/);
+    if ("text" in classList.contents[0]) {
       const text = classList.contents[0].text as string;
       console.log("Class list:", text.substring(0, 200) + "...");
     }
@@ -50,7 +50,10 @@ async function main() {
     // Test reading a specific class resource
     console.log("\nReading ValueTree class documentation...");
     const valueTreeDocs = await client.readResource({ uri: "juce://class/ValueTree" });
-    if (valueTreeDocs.contents && valueTreeDocs.contents[0] && valueTreeDocs.contents[0].text) {
+    assert(valueTreeDocs.contents[0] && "text" in valueTreeDocs.contents[0]);
+    assert.doesNotMatch(valueTreeDocs.contents[0].text, /not found/i);
+    assert.match(valueTreeDocs.contents[0].text, /ValueTree/);
+    if ("text" in valueTreeDocs.contents[0]) {
       const text = valueTreeDocs.contents[0].text as string;
       console.log("ValueTree docs:", text.substring(0, 200) + "...");
     }
@@ -64,6 +67,7 @@ async function main() {
       }
     });
     
+    assert(!searchResult.isError, "Class search failed");
     // Type assertion for content
     const content = searchResult.content as Array<{type: string, text: string}>;
     if (content && content.length > 0) {
@@ -79,6 +83,7 @@ async function main() {
       }
     });
     
+    assert(!audioDocs.isError, "AudioBuffer documentation lookup failed");
     // Type assertion for content
     const audioContent = audioDocs.content as Array<{type: string, text: string}>;
     if (audioContent && audioContent.length > 0) {
